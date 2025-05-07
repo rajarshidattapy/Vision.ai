@@ -23,7 +23,7 @@
 | Frontend      | HTML, CSS, JS                   |        |
 | AI Model      | Replicate API (DreamBooth on SD 1.5)      |
 | Prompt Gen    | OpenAI GPT API                            |
-| Storage       | AWS S3 or IPFS                            |
+| Storage       | IPFS                                      |
 | NFT Minting   | Solana + Metaplex + `@solana/web3.js`     |
 | Wallet        | Solana Wallet Adapter (Phantom, etc)      |
 
@@ -36,14 +36,6 @@
 > Upload → Fine-tune → Generate → Mint NFT → Done ✅
 
 ---
-
-## 🔐 Authentication
-
-- Uses **NextAuth** with Google Provider.
-- Stores user sessions and data in a **PostgreSQL** database (via Prisma).
-
----
-
 ## 🧠 AI Model Fine-Tuning
 
 - Utilizes [Replicate](https://replicate.com/) API to train a **DreamBooth model** based on the user's 15–20 uploaded images.
