@@ -93,30 +93,6 @@
    ```bash
    npm run dev
    ```
-
----
-
-## 📁 Folder Structure
-
-```
-.
-├── pages
-│   ├── api (Auth, Upload, Generate, Mint)
-│   └── index.tsx
-├── lib (Solana, AWS, Replicate utils)
-├── prisma (Schema & Migrations)
-├── public
-└── styles
-```
-
----
-
-## 📸 Screenshots
-
-| Upload | Generated Avatars | NFT Mint |
-|--------|-------------------|----------|
-| ![](./public/screenshots/upload.png) | ![](./public/screenshots/generated.png) | ![](./public/screenshots/mint.png) |
-
 ---
 
 ## 💡 Future Additions
@@ -132,5 +108,4 @@
 
 [MIT](LICENSE)
 
-```
 
