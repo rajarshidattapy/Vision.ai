@@ -7,6 +7,10 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 from PIL import Image
 from io import BytesIO
+from dotenv import load_dotenv
+
+# Load environment variables from .env file if it exists
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -14,15 +18,16 @@ app = Flask(__name__)
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 MAX_IMAGES = 20
-REPLICATE_API_TOKEN = ""
+
+# Get API token from environment variable - no hardcoded tokens
+REPLICATE_API_TOKEN = os.environ.get("REPLICATE_API_TOKEN")
+if not REPLICATE_API_TOKEN:
+    print("Warning: REPLICATE_API_TOKEN environment variable not set")
 
 # Ensure upload directory exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
-
-# Set the API token for Replicate
-os.environ["REPLICATE_API_TOKEN"] = REPLICATE_API_TOKEN
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
