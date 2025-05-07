@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Avatar Generator</title>
+    <style>
+        :root {
+            --primary-color: #6633cc; /* Purple color from the Minter */
+            --primary-hover: #5522bb;
+            --secondary-color: #e0e7ff;
+            --text-color: #ffffff; /* White text for dark background */
+            --background-color: #1d012d; /* Dark purple background */
+            --card-background: #33174d; /* Slightly lighter purple for cards */
+            --border-color: #7b4baa;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+            --btn-primary: #6633cc;
+            --btn-primary-hover: #5522bb;
+            --btn-secondary: #ffffff;
+            --btn-secondary-text: #6633cc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #ccc;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .upload-container {
+            margin-top: 1.5rem;
+        }
+
+        #drop-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        #drop-area.highlight {
+            border-color: #ffffff;
+            background-color: rgba(102, 51, 204, 0.2);
+        }
+
+        .file-input-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 1rem;
+        }
+
+        .file-input-label .icon {
+            font-size: 2rem;
+        }
+
+        #gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 0.25rem;
+            overflow: hidden;
+            height: 100px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-button {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 1;
+        }
+
+        .file-count {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #ccc;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        .button.primary {
+            background-color: var(--btn-primary);
+            color: white;
+        }
+
+        .button.primary:hover {
+            background-color: var(--btn-primary-hover);
+        }
+
+        .button.primary:disabled {
+            background-color: #8866dd;
+            cursor: not-allowed;
+        }
+
+        .button.secondary {
+            background-color: var(--btn-secondary);
+            color: var(--btn-secondary-text);
+        }
+
+        .button.secondary:hover {
+            background-color: #f0f0f0;
+        }
+
+        .progress-container {
+            margin-top: 1.5rem;
+        }
+
+        .progress-bar {
+            height: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 9999px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.875rem;
+            color: #ccc;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            border: 1px solid var(--border-color);
+            background-color: #2a1240;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .customize-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .avatars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .avatar-item {
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .avatar-item:hover {
+            transform: scale(1.03);
+        }
+
+        .avatar-item img {
+            width: 100%;
+            display: block;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 500;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .notification.success {
+            background-color: var(--success-color);
+        }
+
+        .notification.error {
+            background-color: var(--error-color);
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .nav-bar {
+            background-color: var(--primary-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-bar .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .nav-bar .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-bar .nav-links a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            color: #ccc;
+            font-size: 0.875rem;
+        }
+
+        .mint-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+        }
+
+        .mint-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .customize-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .avatars-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .buttons-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <div class="logo">Vision.ai</div>
+        <div class="nav-links">
+            <a href="#"></a>
+        </div>
+        <div class="user-info">
+            <span></span>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>AI Avatar Generator</h1>
+            <p>Upload 15-20 images of yourself to generate personalized AI avatars</p>
+        </header>
+
+        <main>
+            <section id="upload-section">
+                <div class="card">
+                    <h2>Step 1: Upload Your Photos</h2>
+                    <p>Select 15-20 clear, well-lit photos that show different angles of your face</p>
+                    
+                    <div class="upload-container">
+                        <div id="drop-area">
+                            <form id="upload-form">
+                                <input type="file" id="file-input" multiple accept=".jpg,.jpeg,.png,.webp" hidden>
+                                <label for="file-input" class="file-input-label">
+                                    <span class="icon">📁</span>
+                                    <span>Choose photos or drag them here</span>
+                                </label>
+                                <div id="gallery"></div>
+                            </form>
+                            <div class="file-count">
+                                <span id="file-counter">0</span> / 20 images selected
+                            </div>
+                        </div>
+                        <button id="upload-button" class="button primary" disabled>Upload Photos</button>
+                    </div>
+                    
+                    <div id="upload-progress" class="progress-container hidden">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <div class="progress-text">Uploading...</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="customize-section" class="hidden">
+                <div class="card">
+                    <h2>Step 2: Customize Your Avatars</h2>
+                    <div class="customize-options">
+                        <div class="form-group">
+                            <label for="avatar-count">Number of Avatars:</label>
+                            <select id="avatar-count">
+                                <option value="2">2</option>
+                                <option value="3" selected>3</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="avatar-style">Style:</label>
+                            <select id="avatar-style">
+                                <option value="realistic" selected>Realistic</option>
+                                <option value="anime">Anime</option>
+                                <option value="cartoon">Cartoon</option>
+                                <option value="fantasy">Fantasy</option>
+                                <option value="cyberpunk">Cyberpunk</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="avatar-gender">Gender Presentation:</label>
+                            <select id="avatar-gender">
+                                <option value="neutral" selected>Neutral</option>
+                                <option value="masculine">Masculine</option>
+                                <option value="feminine">Feminine</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button id="generate-button" class="button primary">Generate Avatars</button>
+                    
+                    <div id="generation-progress" class="progress-container hidden">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <div class="progress-text">Generating avatars (this may take a few minutes)...</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="result-section" class="hidden">
+                <div class="card">
+                    <h2>Step 3: Your AI Avatars</h2>
+                    <p>Click on any avatar to download it</p>
+                    
+                    <div id="avatars-container" class="avatars-grid"></div>
+                    
+                    <div class="buttons-container">
+                        <button id="download-all-button" class="button secondary">Download All</button>
+                        <button id="start-over-button" class="button secondary">Start Over</button>
+                        <a href="https://solana-nft-minter-zarrix.vercel.app/" target="_blank" id="open-minter-button" class="mint-btn">Open Minter</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div id="notification" class="notification hidden"></div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 AI Avatar Generator</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const dropArea = document.getElementById('drop-area');
+            const fileInput = document.getElementById('file-input');
+            const gallery = document.getElementById('gallery');
+            const fileCounter = document.getElementById('file-counter');
+            const uploadButton = document.getElementById('upload-button');
+            const uploadSection = document.getElementById('upload-section');
+            const customizeSection = document.getElementById('customize-section');
+            const resultSection = document.getElementById('result-section');
+            const generateButton = document.getElementById('generate-button');
+            const avatarCount = document.getElementById('avatar-count');
+            const avatarStyle = document.getElementById('avatar-style');
+            const avatarGender = document.getElementById('avatar-gender');
+            const avatarsContainer = document.getElementById('avatars-container');
+            const downloadAllButton = document.getElementById('download-all-button');
+            const startOverButton = document.getElementById('start-over-button');
+            const uploadProgress = document.getElementById('upload-progress');
+            const generationProgress = document.getElementById('generation-progress');
+            const progressFills = document.querySelectorAll('.progress-fill');
+
+            // State
+            let files = [];
+            let sessionId = null;
+
+            // Event Listeners
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            dropArea.addEventListener('drop', handleDrop, false);
+            fileInput.addEventListener('change', handleFileSelect);
+            uploadButton.addEventListener('click', uploadFiles);
+            generateButton.addEventListener('click', generateAvatars);
+            downloadAllButton.addEventListener('click', downloadAllAvatars);
+            startOverButton.addEventListener('click', startOver);
+
+            // Functions
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            function highlight() {
+                dropArea.classList.add('highlight');
+            }
+
+            function unhighlight() {
+                dropArea.classList.remove('highlight');
+            }
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const newFiles = dt.files;
+                handleFiles(newFiles);
+            }
+
+            function handleFileSelect() {
+                handleFiles(fileInput.files);
+            }
+
+            function handleFiles(newFiles) {
+                // Check if adding these files exceeds the limit
+                if (files.length + newFiles.length > 20) {
+                    showNotification('You can only upload up to 20 images', 'error');
+                    return;
+                }
+
+                Array.from(newFiles).forEach(file => {
+                    // Check if the file is an image
+                    if (!file.type.match('image.*')) {
+                        showNotification('Please upload only image files', 'error');
+                        return;
+                    }
+
+                    files.push(file);
+                    previewFile(file);
+                });
+
+                updateFileCounter();
+            }
+
+            function previewFile(file) {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onloadend = function() {
+                    const div = document.createElement('div');
+                    div.className = 'gallery-item';
+                    div.innerHTML = `
+                        <img src="${reader.result}" alt="${file.name}">
+                        <button class="remove-button" data-index="${files.length - 1}">×</button>
+                    `;
+                    gallery.appendChild(div);
+
+                    // Add event listener to remove button
+                    div.querySelector('.remove-button').addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        removeFile(index);
+                    });
+                };
+            }
+
+            function removeFile(index) {
+                files.splice(index, 1);
+                updateGallery();
+                updateFileCounter();
+            }
+
+            function updateGallery() {
+                gallery.innerHTML = '';
+                files.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onloadend = function() {
+                        const div = document.createElement('div');
+                        div.className = 'gallery-item';
+                        div.innerHTML = `
+                            <img src="${reader.result}" alt="${file.name}">
+                            <button class="remove-button" data-index="${index}">×</button>
+                        `;
+                        gallery.appendChild(div);
+
+                        // Add event listener to remove button
+                        div.querySelector('.remove-button').addEventListener('click', function() {
+                            const index = parseInt(this.getAttribute('data-index'));
+                            removeFile(index);
+                        });
+                    };
+                });
+            }
+
+            function updateFileCounter() {
+                fileCounter.textContent = files.length;
+                
+                // Enable or disable the upload button based on file count
+                if (files.length >= 5 && files.length <= 20) {
+                    uploadButton.disabled = false;
+                } else {
+                    uploadButton.disabled = true;
+                }
+            }
+
+            function uploadFiles() {
+                if (files.length < 5) {
+                    showNotification('Please upload at least 5 images', 'error');
+                    return;
+                }
+
+                if (files.length > 20) {
+                    showNotification('You can only upload up to 20 images', 'error');
+                    return;
+                }
+
+                // Show progress
+                uploadProgress.classList.remove('hidden');
+                progressFills[0].style.width = '0%';
+                
+                // Create FormData
+                const formData = new FormData();
+                files.forEach(file => {
+                    formData.append('images', file);
+                });
+
+                // Simulate upload progress
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += 5;
+                    if (progress > 90) {
+                        clearInterval(progressInterval);
+                    }
+                    progressFills[0].style.width = `${progress}%`;
+                }, 200);
+
+                // Send files to server
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    clearInterval(progressInterval);
+                    progressFills[0].style.width = '100%';
+                    
+                    if (data.success) {
+                        sessionId = data.session_id;
+                        
+                        // Move to the next step after a short delay
+                        setTimeout(() => {
+                            uploadSection.classList.add('hidden');
+                            customizeSection.classList.remove('hidden');
+                            uploadProgress.classList.add('hidden');
+                        }, 1000);
+                        
+                        showNotification('Images uploaded successfully!', 'success');
+                    } else {
+                        uploadProgress.classList.add('hidden');
+                        showNotification(data.error || 'Error uploading images', 'error');
+                    }
+                })
+                .catch(error => {
+                    clearInterval(progressInterval);
+                    uploadProgress.classList.add('hidden');
+                    console.error('Error:', error);
+                    showNotification('Network error. Please try again.', 'error');
+                });
+            }
+
+            function generateAvatars() {
+                if (!sessionId) {
+                    showNotification('Session not found. Please upload your images again.', 'error');
+                    return;
+                }
+
+                // Show progress
+                generationProgress.classList.remove('hidden');
+                progressFills[1].style.width = '0%';
+
+                // Get options
+                const numAvatars = avatarCount.value;
+                const style = avatarStyle.value;
+                const gender = avatarGender.value;
+
+                // Prepare request data
+                const requestData = {
+                    session_id: sessionId,
+                    num_avatars: parseInt(numAvatars),
+                    style: style,
+                    gender: gender
+                };
+
+                // Simulate generation progress (this will take longer in reality)
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += 2;
+                    if (progress > 95) {
+                        clearInterval(progressInterval);
+                    }
+                    progressFills[1].style.width = `${progress}%`;
+                }, 500);
+
+                // Send request to server
+                fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    clearInterval(progressInterval);
+                    progressFills[1].style.width = '100%';
+                    
+                    if (data.success) {
+                        // Display the generated avatars
+                        displayAvatars(data.avatars);
+                        
+                        // Move to the next step after a short delay
+                        setTimeout(() => {
+                            customizeSection.classList.add('hidden');
+                            resultSection.classList.remove('hidden');
+                            generationProgress.classList.add('hidden');
+                        }, 1000);
+                        
+                        showNotification('Avatars generated successfully!', 'success');
+                    } else {
+                        generationProgress.classList.add('hidden');
+                        showNotification(data.error || 'Error generating avatars', 'error');
+                    }
+                })
+                .catch(error => {
+                    clearInterval(progressInterval);
+                    generationProgress.classList.add('hidden');
+                    console.error('Error:', error);
+                    showNotification('Network error. Please try again.', 'error');
+                });
+            }
+
+            function displayAvatars(avatars) {
+                avatarsContainer.innerHTML = '';
+                
+                avatars.forEach(avatar => {
+                    const div = document.createElement('div');
+                    div.className = 'avatar-item';
+                    div.innerHTML = `<img src="${avatar.path}" alt="Generated Avatar">`;
+                    avatarsContainer.appendChild(div);
+                    
+                    // Add click event to download individual avatar
+                    div.addEventListener('click', () => {
+                        downloadAvatar(avatar.filename);
+                    });
+                });
+            }
+            
+            function downloadAvatar(filename) {
+                if (!sessionId) return;
+                
+                const downloadUrl = `/download/${sessionId}/${filename}`;
+                
+                // Create a temporary anchor to trigger the download
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+            
+            function downloadAllAvatars() {
+                // Get all avatar images
+                const avatarImages = avatarsContainer.querySelectorAll('.avatar-item img');
+                
+                // Trigger download for each avatar with a slight delay
+                Array.from(avatarImages).forEach((img, index) => {
+                    setTimeout(() => {
+                        const filename = img.src.split('/').pop();
+                        downloadAvatar(filename);
+                    }, index * 500);
+                });
+                
+                showNotification('Downloading all avatars...', 'success');
+            }
+            
+            function startOver() {
+                // Reset everything
+                files = [];
+                sessionId = null;
+                gallery.innerHTML = '';
+                avatarsContainer.innerHTML = '';
+                updateFileCounter();
+                
+                // Show the first section, hide others
+                uploadSection.classList.remove('hidden');
+                customizeSection.classList.add('hidden');
+                resultSection.classList.add('hidden');
+                
+                // Reset progress bars
+                progressFills.forEach(fill => {
+                    fill.style.width = '0%';
+                });
+                
+                // Reset the file input
+                fileInput.value = '';
+            }
+            
+            function showNotification(message, type) {
+                const notification = document.getElementById('notification');
+                notification.textContent = message;
+                notification.className = `notification ${type}`;
+                notification.classList.add('show');
+                
+                // Hide notification after 3 seconds
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
