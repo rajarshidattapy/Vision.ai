@@ -1,6 +1,0 @@
-Flask
-Werkzeug
-Pillow
-python-dotenv
-requests
-replicate
