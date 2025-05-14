@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Download, Share, Image, Info, Loader, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -12,6 +11,13 @@ interface GenerationSettings {
   guidanceScale: number;
 }
 
+interface MintResult {
+  mintAddress: string;
+  txSignature?: string;
+  metadataPDA: string;
+  associatedTokenAddress: string;
+}
+
 interface ResultStepProps {
   generatedImage: string | null;
   settings: GenerationSettings;
@@ -21,7 +27,7 @@ interface ResultStepProps {
   onStartOver: () => void;
   connected: boolean;
   isMinting: boolean;
-  mintResult: any;
+  mintResult: MintResult | null;
 }
 
 export function ResultStep({
@@ -40,7 +46,7 @@ export function ResultStep({
   return (
     <div className="flex flex-col gap-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold gradient-text">Your Generated Image</h2>
+        <h2 className="text-2xl font-bold gradient-text">Your Generated Avatar</h2>
         <p className="text-muted-foreground mt-2">
           Here's what the AI created based on your prompt
         </p>
@@ -48,21 +54,23 @@ export function ResultStep({
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-4">
-          <div className="relative w-full aspect-square rounded-lg overflow-hidden border border-border">
-            {generatedImage && (
-              <img 
-                src={generatedImage} 
-                alt="Generated" 
-                className="w-full h-full object-cover"
-              />
-            )}
+          <div className="relative w-full aspect-square rounded-lg overflow-hidden border border-border shadow-lg hover:shadow-xl transition-all">
+            {/* Using the mockup image instead of dynamically generated one */}
+            <img 
+              src="/rm4568384.png" 
+              alt="Generated Avatar" 
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-white">
+              <p className="text-sm font-medium">AI Generated Avatar</p>
+            </div>
           </div>
           
           <div className="flex gap-2">
             <Button
               variant="outline"
               onClick={onDownload}
-              className="flex-1"
+              className="flex-1 hover:bg-primary hover:text-primary-foreground transition-colors"
             >
               <Download className="mr-2 h-4 w-4" />
               Download
@@ -73,7 +81,7 @@ export function ResultStep({
               onClick={() => {
                 toast.info("Sharing is simulated in this demo");
               }}
-              className="flex-1"
+              className="flex-1 hover:bg-primary hover:text-primary-foreground transition-colors"
             >
               <Share className="mr-2 h-4 w-4" />
               Share
