@@ -20,9 +20,9 @@
 
 | Layer         | Tech                                      |
 |---------------|-------------------------------------------|
-| Frontend      | HTML, CSS, JS                   |        |
+| Frontend      | Next.Js & Shad CN UI                      |  
 | AI Model      | Replicate API (DreamBooth on SD 1.5)      |
-| Prompt Gen    | OpenAI GPT API                            |
+| Prompt Gen    | Openrouter API - Gemini 2.5 Pro exp       |
 | Storage       | IPFS                                      |
 | NFT Minting   | Solana + Metaplex + `@solana/web3.js`     |
 | Wallet        | Solana Wallet Adapter (Phantom, etc)      |
@@ -31,7 +31,7 @@
 
 ## 🧪 Demo
 
-👉 [Live Demo](.vercel.app)
+👉 [Live Demo](https://vision-ai-solana-breakout-hackathon.vercel.app/)
 
 > Upload → Fine-tune → Generate → Mint NFT → Done ✅
 
